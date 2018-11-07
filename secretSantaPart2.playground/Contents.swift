@@ -48,50 +48,22 @@ func randomNumber(max: Int) -> Int {
 ////////////////////////////////////////////
 // Make the Secret Santa List
 ////////////////////////////////////////////
-for person in listOfPeople {
-    
-    // Get random index
-    var randomIndex = randomNumber(max: availablePeople.count)
-    
-    // Get another index if person is assigned to himself/herself
-    while person.name == availablePeople[randomIndex].name {
-        randomIndex = randomNumber(max: availablePeople.count)
-    }
-    
-    // check to see if the last available person will get himself/herself and make sure it doesn't happen
-    if availablePeople.count == 2 {
-        if listOfPeople[listOfPeople.count - 1] === availablePeople[1] {
-            randomIndex = 1
-        }
-    }
-    
-    // Assign the random person to assignee
-    let assignee = availablePeople[randomIndex]
-    
-    // Append the match to assignedPeople
-    assignedPeople.append(Assignment(person: person, assignee: assignee, historyOfAssignees: [assignee]))
-    
-    // Remove person from availblePeople
-    availablePeople.remove(at: randomIndex)
-    
-    // Print the match
-    print("\(person.name) is assigned to \(assignee.name)")
-}
-
-
-
-
-print(assignedPeople[0].historyOfAssignees[0].name)
-
 func assignSecretSanta(list: [Person]) -> [Assignment] {
-    for person in listOfPeople {
-        print(listOfPeople)
+    for person in list {
+        
         // Get random index
-        var randomIndex = Int.random(in: 0 ..< availablePeople.count)
-        print("hi")
+        var randomIndex = randomNumber(max: availablePeople.count)
+        
         // Get another index if person is assigned to himself/herself
         while person.name == availablePeople[randomIndex].name {
             randomIndex = randomNumber(max: availablePeople.count)
+        }
+        
+        // check to see if the last available person will get himself/herself and make sure it doesn't happen
+        if availablePeople.count == 2 {
+            if listOfPeople[listOfPeople.count - 1] === availablePeople[1] {
+                randomIndex = 1
+            }
         }
         
         // Assign the random person to assignee
@@ -102,12 +74,12 @@ func assignSecretSanta(list: [Person]) -> [Assignment] {
         
         // Remove person from availblePeople
         availablePeople.remove(at: randomIndex)
-        
-        // Print the match
-        print("\(person.name) is assigned to \(assignee.name)")
     }
-    
     return assignedPeople
 }
 
-var secretList = assignSecretSanta(list: listOfPeople)
+var secretSantaList = assignSecretSanta(list: listOfPeople)
+
+for item in secretSantaList {
+    print("\(item.person.name) is assigned to \(item.assignee.name)")
+}
