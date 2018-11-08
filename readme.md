@@ -5,6 +5,9 @@ Improvements
 -setup a Realm database
 
 Part 3
+
+Based on the instructions, I felt like I was allowed a few hours so I tried to get as much down in that time without going too far over.
+
 I didn't complete part 3 but I would have just assigned names to unavailableNames in the listOfPeople declaration as family members. In that way, Part 3 is identical to Part 2. If I had used more class properties, Part 3 would have had an additional familyMembers property which would have required an additional conditional.
 
 I wanted to use swift because I thought it would be a language used more frequently in this position. I feel that I could have done better with javascript since I have written that more as of lately.
