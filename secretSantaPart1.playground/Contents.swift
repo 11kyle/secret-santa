@@ -57,16 +57,16 @@ func assignSecretSanta(list: [Person]) -> [String] {
         // Get random index
         var randomIndex = getRandomNumber(max: availablePeople.count)
         // Assign variables
-        let a: String = person.name
-        var b: [String] = availablePeople[randomIndex].unavailableNames
-        var c: String = availablePeople[randomIndex].name
+        let currentPersonName: String = person.name
+        var currentPersonUnavailableNames: [String] = person.unavailableNames
+        var randomPersonName: String = availablePeople[randomIndex].name
         
         // Get another name if it is unavailable
-        while b.contains(a) || a == c {
+        while currentPersonUnavailableNames.contains(randomPersonName) || currentPersonName == randomPersonName {
             // Randomize
             randomIndex = getRandomNumber(max: availablePeople.count)
-            b = availablePeople[randomIndex].unavailableNames
-            c = availablePeople[randomIndex].name
+            currentPersonUnavailableNames = person.unavailableNames
+            randomPersonName = availablePeople[randomIndex].name
         }
         // Edge case: check to see if the last person will get himself/herself and prevent it
         if availablePeople.count == 2 {
