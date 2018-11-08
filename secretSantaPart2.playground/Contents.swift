@@ -66,20 +66,20 @@ func assignSecretSanta(list: [Person]) throws -> [String] {
             // Get random index
             var randomIndex = getRandomNumber(max: availablePeople.count)
             // Assign variables
-            let a: String = person.name
-            var b: [String] = person.unavailableNames
-            var c: String = availablePeople[randomIndex].name
+            let currentPersonName: String = person.name
+            var currentPersonUnavailableNames: [String] = person.unavailableNames
+            var randomPersonName: String = availablePeople[randomIndex].name
             
             // Get another name if it is unavailable
-            while b.contains(c) || a == c {
+            while currentPersonUnavailableNames.contains(randomPersonName) || currentPersonName == randomPersonName {
                 // Randomize
                 randomIndex = getRandomNumber(max: availablePeople.count)
-                b = person.unavailableNames
-                c = availablePeople[randomIndex].name
+                currentPersonUnavailableNames = person.unavailableNames
+                randomPersonName = availablePeople[randomIndex].name
                 
                 // Edge case: check to see if the last person will get himself/herself and start over if true
                 if availablePeople.count == 1 {
-                    if b.contains(c) || a == c {
+                    if currentPersonUnavailableNames.contains(randomPersonName) || currentPersonName == randomPersonName {
                         index = 0
                         generatedList = []
                         // Clear unavailableNames from each person in the list
@@ -91,13 +91,13 @@ func assignSecretSanta(list: [Person]) throws -> [String] {
                     }
                 }
                 // Edge case: check to see if second to last person will get himself/herself or an unavailable and start over if true
-                if availablePeople.count == 2 && b.contains(c) {
+                if availablePeople.count == 2 && currentPersonUnavailableNames.contains(randomPersonName) {
                     // Select the only other option
-                    //print("NOTICE 1: \(c)") : Was used for debugging
+                    //print("NOTICE 1: \(randomPersonName)") : Was used for debugging
                     randomIndex = randomIndex == 1 ? 0 : 1
-                    c = availablePeople[randomIndex].name
-                    //print("NOTICE 2: \(c)") : Was used for debugging
-                    if a == c && b.contains(c) {
+                    randomPersonName = availablePeople[randomIndex].name
+                    //print("NOTICE 2: \(randomPersonName)") : Was used for debugging
+                    if currentPersonName == randomPersonName && currentPersonUnavailableNames.contains(randomPersonName) {
                         index = 0
                         generatedList = []
                         // Clear unavailableNames from each person in the list
