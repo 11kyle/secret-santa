@@ -1,0 +1,12 @@
+{
+    "_id": 12345,
+    "name": "Kyle",
+    "immediateFamily": [
+        {
+            "name": "Kevin"
+        },
+        {
+            "name": "Patty"
+        }
+    ]
+}
