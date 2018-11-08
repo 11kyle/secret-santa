@@ -1,7 +1,7 @@
 import UIKit
 
 ////////////////////////////////////////////
-// Secret Santa Part 2
+// Secret Santa Part 1
 ////////////////////////////////////////////
 
 ////////////////////////////////////////////
@@ -9,77 +9,164 @@ import UIKit
 ////////////////////////////////////////////
 class Person {
     var name: String
+    var unavailableNames: [String]
     
-    init(name: String) {
+    init(name: String, unavailableNames: [String]) {
         self.name = name
+        self.unavailableNames = unavailableNames
     }
 }
 
 let listOfPeople = [
-    Person(name: "Kyle"),
-    Person(name: "Travis"),
-    Person(name: "Amber"),
-    Person(name: "Joshua"),
-    Person(name: "Colleen")
+    Person(name: "Kyle",
+           unavailableNames: []),
+    Person(name: "Travis",
+           unavailableNames: []),
+    Person(name: "Amber",
+           unavailableNames: []),
+    Person(name: "Joshua",
+           unavailableNames: [])/*,
+    Person(name: "Colleen",
+           unavailableNames: ["Colleen"]),
+    Person(name: "Kevin",
+           unavailableNames: ["Kevin"]),
+    Person(name: "Patty",
+           unavailableNames: ["Patty"])*/
 ]
 
-class Assignment {
-    var person: Person
-    var assignee: Person
-    var historyOfAssignees: Array<Person>
-    
-    init(person: Person, assignee: Person, historyOfAssignees: Array<Person>) {
-        self.person = person
-        self.assignee = assignee
-        self.historyOfAssignees = historyOfAssignees
-    }
-}
-
 var availablePeople = [Person](listOfPeople)
-var assignedPeople = [Assignment]()
 
 ////////////////////////////////////////////
 // Helper function - Generates random number
 ////////////////////////////////////////////
-func randomNumber(max: Int) -> Int {
+func getRandomNumber(max: Int) -> Int {
     return Int.random(in: 0 ..< max)
 }
 
+enum SecretSantaError: Error {
+    case tooFewNames(namesNeeded: Int)
+}
 ////////////////////////////////////////////
 // Make the Secret Santa List
 ////////////////////////////////////////////
-func assignSecretSanta(list: [Person]) -> [Assignment] {
-    for person in list {
+func assignSecretSanta(list: [Person]) throws -> [String] {
+    
+    guard list.count >= 4 else {
+        throw SecretSantaError.tooFewNames(namesNeeded: 4)
+    }
+    
+    var generatedList = [String]()
+    
+    finish: for var index in 0...1 {
         
-        // Get random index
-        var randomIndex = randomNumber(max: availablePeople.count)
-        
-        // Get another index if person is assigned to himself/herself
-        while person.name == availablePeople[randomIndex].name {
-            randomIndex = randomNumber(max: availablePeople.count)
-        }
-        
-        // check to see if the last available person will get himself/herself and make sure it doesn't happen
-        if availablePeople.count == 2 {
-            if listOfPeople[listOfPeople.count - 1] === availablePeople[1] {
-                randomIndex = 1
+        availablePeople = [Person](listOfPeople)
+
+        label: for person in list {
+            
+            // Get random index
+            var randomIndex = getRandomNumber(max: availablePeople.count)
+            // Assign variables
+            let a: String = person.name
+            var b: [String] = person.unavailableNames
+            var c: String = availablePeople[randomIndex].name
+            
+            // Get another name if it is unavailable
+            while b.contains(c) || a == c {
+                // Randomize
+                randomIndex = getRandomNumber(max: availablePeople.count)
+                b = person.unavailableNames
+                c = availablePeople[randomIndex].name
+                
+                // Edge case: check to see if the last person will get himself/herself and start over if true
+                if availablePeople.count == 1 {
+                    if b.contains(c) || a == c {
+                        index = 0
+                        generatedList = []
+                        // Clear unavailableNames from each person in the list
+                        for person in listOfPeople {
+                            person.unavailableNames.removeAll()
+                        }
+                        //print("ERROR 1: Can't be assigned to self! : Restart") Was used for debugging
+                        break label
+                    }
+                }
+                // Edge case: check to see if second to last person will get himself/herself or an unavailable and start over if true
+                if availablePeople.count == 2 && b.contains(c) {
+                    // Select the only other option
+                    //print("NOTICE 1: \(c)") : Was used for debugging
+                    randomIndex = randomIndex == 1 ? 0 : 1
+                    c = availablePeople[randomIndex].name
+                    //print("NOTICE 2: \(c)") : Was used for debugging
+                    if a == c && b.contains(c) {
+                        index = 0
+                        generatedList = []
+                        // Clear unavailableNames from each person in the list
+                        for person in listOfPeople {
+                            person.unavailableNames.removeAll()
+                        }
+                        //print("ERROR 2: Can't be assigned! : End of Program") Was used when debugging
+                        break label
+                    }
+                }
+            }
+
+            // Assign the random person to assignee
+            let assignee = availablePeople[randomIndex]
+            
+            // Remove person from availblePeople
+            availablePeople.remove(at: randomIndex)
+            
+            // Print the match
+            let matchString: String = "\(person.name) is assigned to \(assignee.name)"
+            //print(matchString)
+            
+            // Append the string to the generatedList
+            generatedList.append(matchString)
+            
+            // Add name to unavailableNames
+            person.unavailableNames += [assignee.name]
+            
+            // If SUCCESS exit loop
+            if generatedList.count == list.count {
+                //print("End of program") Was used for debugging
+                break finish
             }
         }
-        
-        // Assign the random person to assignee
-        let assignee = availablePeople[randomIndex]
-        
-        // Append the match to assignedPeople
-        assignedPeople.append(Assignment(person: person, assignee: assignee, historyOfAssignees: [assignee]))
-        
-        // Remove person from availblePeople
-        availablePeople.remove(at: randomIndex)
     }
-    return assignedPeople
+    return generatedList
 }
 
-var secretSantaList = assignSecretSanta(list: listOfPeople)
 
-for item in secretSantaList {
-    print("\(item.person.name) is assigned to \(item.assignee.name)")
+
+
+
+// Call secretSantaList function
+var secretSantaList = try assignSecretSanta(list: listOfPeople)
+
+// Print the matchs
+for match in secretSantaList {
+    print(match)
 }
+print()
+
+
+
+// Call secretSantaList function
+var secretSantaList2 = try assignSecretSanta(list: listOfPeople)
+
+// Print the matchs
+for match in secretSantaList2 {
+    print(match)
+}
+print()
+
+
+
+// Call secretSantaList function
+var secretSantaList3 = try assignSecretSanta(list: listOfPeople)
+
+// Print the matchs
+for match in secretSantaList3 {
+    print(match)
+}
+print()
